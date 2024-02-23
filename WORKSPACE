@@ -2,7 +2,7 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-workspace(name = "new_agent")  # XXX: rename
+workspace(name = "mpc_balancer")
 
 # Add default repositories listed in tools/workspace/
 load("//tools/workspace:default.bzl", "add_default_repositories")
