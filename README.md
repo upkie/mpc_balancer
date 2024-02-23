@@ -1,25 +1,30 @@
-# MPC balancer {#mpc-balancer}
-
-[![Documentation](https://img.shields.io/badge/docs-online-brightgreen?logo=read-the-docs&style=flat)](https://upkie.github.io/upkie/namespacempc__balancer.html)
+# MPC balancer
 
 The MPC balancer allows Upkie to stand upright, balancing with its wheels only, by closed-loop model predictive control. It performs better than the [PID balancer](@ref pid-balancer) with significantly less hacks ;-)
 
 ## Installation
 
-From PyPI: run ``pip install upkie[mpc_balancer]`` to install all packages necessary to run this agent. This works on both your dev machine and the robot's Raspberry Pi.
+### From Conda
+
+```console
+conda create -f environment.yaml
+conda activate mpc_balancer
+```
+
+### From PyPI
+
+```console
+pip install upkie[mpc_balancer]
+```
+
+This instruction works on both your dev machine and the robot's Raspberry Pi.
 
 ## Simulation
 
-To test this agent in simulation, run the Bullet spine:
+To test the agent in simulation, run the [Bullet spine](https://upkie.github.io/upkie/spines.html#bullet-spine), then start the agent:
 
 ```console
-./tools/bazelisk run //spines:bullet_spine -- --show
-```
-
-Then run the MPC balancer:
-
-```console
-./tools/bazelisk run //agents/mpc_balancer
+./run_agent.sh
 ```
 
 ## Real robot
