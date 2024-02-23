@@ -22,11 +22,11 @@ py_binary(
         ":config",
     ],
     deps = [
-        "//upkie/envs",
-        "//upkie/observers/base_pitch",
-        "//upkie/utils:clamp",
-        "//upkie/utils:filters",
-        "//upkie/utils:raspi",
-        "//upkie/utils:spdlog",
+        "@upkie//upkie/envs",
+        "@upkie//upkie/observers/base_pitch",
+        "@upkie//upkie/utils:clamp",
+        "@upkie//upkie/utils:filters",
+        "@upkie//upkie/utils:raspi",
+        "@upkie//upkie/utils:spdlog",
     ],
 )
