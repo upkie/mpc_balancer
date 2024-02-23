@@ -17,12 +17,11 @@ import gymnasium as gym
 import numpy as np
 import proxsuite
 import qpsolvers
+import upkie.envs
 from numpy.typing import NDArray
 from qpmpc import MPCQP, Plan, solve_mpc
 from qpmpc.systems import WheeledInvertedPendulum
 from qpsolvers import solve_problem
-
-import upkie.envs
 from upkie.utils.clamp import clamp_and_warn
 from upkie.utils.filters import low_pass_filter
 from upkie.utils.raspi import configure_agent_process, on_raspi
@@ -118,19 +117,19 @@ def balance(
     terminal_cost_weight: float,
     warm_start: bool,
 ):
-    """!
-    Run proportional balancer in gym environment with logging.
+    """Run MPC balancer in gym environment with logging.
 
-    @param env Gym environment to Upkie.
-    @param nb_env_steps Number of environment steps to perform (zero to run
-        indefinitely).
-    @param rebuild_qp_every_time If set, rebuild all QP matrices at every
-        iteration. Otherwise, only update vectors.
-    @param show_live_plot Show a live plot.
-    @param stage_input_cost_weight Weight for the stage input cost.
-    @param stage_state_cost_weight Weight for the stage state cost.
-    @param terminal_cost_weight Weight for the terminal cost.
-    @param warm_start If set, use the warm-starting feature of ProxQP.
+    Args:
+        env: Gym environment to Upkie.
+        nb_env_steps: Number of environment steps to perform (zero to run
+            indefinitely).
+        rebuild_qp_every_time: If set, rebuild all QP matrices at every
+            iteration. Otherwise, only update vectors.
+        show_live_plot: Show a live plot.
+        stage_input_cost_weight: Weight for the stage input cost.
+        stage_state_cost_weight: Weight for the stage state cost.
+        terminal_cost_weight: Weight for the terminal cost.
+        warm_start: If set, use the warm-starting feature of ProxQP.
     """
     pendulum = PendularUpkie()
     mpc_problem = pendulum.build_mpc_problem(
