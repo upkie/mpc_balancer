@@ -58,5 +58,5 @@ upload: check-robot build  ## upload built targets to the Raspberry Pi
 	ssh $(REMOTE) sudo find $(PROJECT_NAME) -type d -name __pycache__ -user root -exec chmod go+wx {} "\;"
 	rsync -Lrtu --delete-after --delete-excluded --exclude bazel-out/ --exclude bazel-testlogs/ --exclude bazel-$(CURDIR_NAME) --exclude bazel-$(PROJECT_NAME)/ --progress $(CURDIR)/ $(REMOTE):$(PROJECT_NAME)/
 
-run_agent:  ### run agent
+run_mpc_balancer:  ### run the agent
 	$(RASPUNZEL) run -v -s //agent

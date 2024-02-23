@@ -1,19 +1,34 @@
-This template repository makes it easier to create new agents for [Upkie](https://github.com/upkie/upkie) wheeled bipeds.
+# MPC balancer {#mpc-balancer}
 
-## Getting started
+[![Documentation](https://img.shields.io/badge/docs-online-brightgreen?logo=read-the-docs&style=flat)](https://upkie.github.io/upkie/namespacempc__balancer.html)
 
-1. Create a new repository from this template.
-2. Search for the string "XXX": it indicates template values to configure, such as the project name.
-3. Replace ``LICENSE`` with the license of your choice (the default one is Apache-2.0)
-4. Implement your agent in the ``agent`` directory.
-5. Optional: adapt the spines in the ``spines`` directory, for instance with custom observers.
+The MPC balancer allows Upkie to stand upright, balancing with its wheels only, by closed-loop model predictive control. It performs better than the [PID balancer](@ref pid-balancer) with significantly less hacks ;-)
 
-## Usage
+## Installation
 
-The `Makefile` can be to build and upload your agent to the real robot. Run ``make help`` for a list of available rules.
+From PyPI: run ``pip install upkie[mpc_balancer]`` to install all packages necessary to run this agent. This works on both your dev machine and the robot's Raspberry Pi.
 
-You can also run your agent locally with Bazelisk:
+## Simulation
 
-```bash
-$ ./tools/bazelisk run //agent
+To test this agent in simulation, run the Bullet spine:
+
+```console
+./tools/bazelisk run //spines:bullet_spine -- --show
+```
+
+Then run the MPC balancer:
+
+```console
+./tools/bazelisk run //agents/mpc_balancer
+```
+
+## Real robot
+
+To run this agent on a real Upkie, you can use the Makefile at the root of the repository:
+
+```console
+$ make build
+$ make upload
+$ ssh your-upkie
+user@your-upkie:~$ make run_mpc_balancer
 ```
