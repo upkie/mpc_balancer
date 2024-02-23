@@ -1,6 +1,6 @@
 # MPC balancer
 
-The MPC balancer allows Upkie to stand upright, balancing with its wheels only, by closed-loop model predictive control. It performs better than the [PID balancer](@ref pid-balancer) with significantly less hacks ;-)
+The MPC balancer allows Upkie to stand upright, balancing with its wheels only, by closed-loop model predictive control. It performs better than the demo [PID balancer](https://github.com/upkie/upkie/tree/902532ecdfdcf0430db7b36cba08a8164c0aa95e/agents/pid_balancer) with significantly less hacks ;-)
 
 ## Installation
 
