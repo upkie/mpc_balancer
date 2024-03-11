@@ -45,18 +45,18 @@ clean_broken_links:
 
 .PHONY: build
 build: clean_broken_links  ## build Raspberry Pi targets
-	$(BAZEL) build --config=pi64 //agent
+	$(BAZEL) build --config=pi64 //$(PROJECT_NAME)
 
 .PHONY: clean
 clean:  ## clean all local build and intermediate files
 	$(BAZEL) clean --expunge
 
 .PHONY: upload
-upload: check-robot build  ## upload built targets to the Raspberry Pi
+upload: check_upkie_name build  ## upload built targets to the Raspberry Pi
 	ssh $(REMOTE) sudo date -s "$(CURDATE)"
 	ssh $(REMOTE) mkdir -p $(PROJECT_NAME)
 	ssh $(REMOTE) sudo find $(PROJECT_NAME) -type d -name __pycache__ -user root -exec chmod go+wx {} "\;"
 	rsync -Lrtu --delete-after --delete-excluded --exclude bazel-out/ --exclude bazel-testlogs/ --exclude bazel-$(CURDIR_NAME) --exclude bazel-$(PROJECT_NAME)/ --progress $(CURDIR)/ $(REMOTE):$(PROJECT_NAME)/
 
 run_mpc_balancer:  ### run the agent
-	$(RASPUNZEL) run -v -s //agent
+	$(RASPUNZEL) run -v -s //$(PROJECT_NAME)
