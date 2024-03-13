@@ -15,6 +15,7 @@ PROJECT_NAME = mpc_balancer
 BAZEL = $(CURDIR)/tools/bazelisk
 CURDATE = $(shell date --iso=seconds)
 CURDIR_NAME = $(shell basename $(CURDIR))
+PYTHON = python3
 RASPUNZEL = $(CURDIR)/tools/raspunzel
 
 # Help snippet adapted from:
@@ -58,5 +59,11 @@ upload: check_upkie_name build  ## upload built targets to the Raspberry Pi
 	ssh $(REMOTE) sudo find $(PROJECT_NAME) -type d -name __pycache__ -user root -exec chmod go+wx {} "\;"
 	rsync -Lrtu --delete-after --delete-excluded --exclude bazel-out/ --exclude bazel-testlogs/ --exclude bazel-$(CURDIR_NAME) --exclude bazel-$(PROJECT_NAME)/ --progress $(CURDIR)/ $(REMOTE):$(PROJECT_NAME)/
 
-run_mpc_balancer:  ### run the agent
+run_locally:  ## run the agent using the Python interpreter
+	$(PYTHON) $(CURDIR)/$(PROJECT_NAME)/main.py
+
+run_with_bazel:  ### run the agent using Bazel
 	$(RASPUNZEL) run -v -s //$(PROJECT_NAME)
+
+run_with_python:  ### run the agent using the Python interpreter
+	$(PYTHON) $(CURDIR)/$(PROJECT_NAME)/main.py
