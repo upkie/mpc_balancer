@@ -24,7 +24,7 @@ This instruction works on both your dev machine and the robot's Raspberry Pi.
 To test the agent in simulation, run the [Bullet spine](https://upkie.github.io/upkie/spines.html#bullet-spine), then start the agent:
 
 ```console
-./run_agent.sh
+make run_locally
 ```
 
 ## Real robot
@@ -35,5 +35,5 @@ To run this agent on a real Upkie, you can use the Makefile at the root of the r
 $ make build
 $ make upload
 $ ssh your-upkie
-user@your-upkie:~$ make run_mpc_balancer
+user@your-upkie:~$ make run_with_python
 ```
