@@ -2,18 +2,11 @@ name: mpc_balancer
 channels:
     - https://conda.anaconda.org/conda-forge
 dependencies:
-    - PyYAML >=6.0
-    - gin-config >= 0.5.0
-    - gymnasium >=0.28.1
-    - loop-rate-limiters >=1.0.0
     - matplotlib >= 3.7.0
     - numpy >=1.24.3
     - pip
     - proxsuite >= 0.4.1
     - qpsolvers >= 3.4.0
-    - scipy >=1.10.0
-    - upkie_description >=1.5.0
-    - vulp >=2.2.1
+    - upkie >=3.4.0
     - pip:
         - qpmpc >=3.0.0
-        - upkie >=3.2.0
