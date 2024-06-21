@@ -29,6 +29,8 @@ from upkie.utils.spdlog import logging
 
 upkie.envs.register()
 
+WHEEL_RADIUS = 0.06
+
 
 def parse_command_line_arguments() -> argparse.Namespace:
     """
@@ -266,5 +268,17 @@ if __name__ == "__main__":
     agent_dir = os.path.dirname(__file__)
     gin.parse_config_file(f"{agent_dir}/config.gin")
     args = parse_command_line_arguments()
-    with gym.make("UpkieGroundVelocity-v3", frequency=200.0) as env:
+    with gym.make(
+        "UpkieGroundVelocity-v3",
+        frequency=200.0,
+        wheel_radius=WHEEL_RADIUS,
+        spine_config={
+            "wheel_odometry": {
+                "signed_radius": {
+                    "left_wheel": -WHEEL_RADIUS,
+                    "right_wheel": +WHEEL_RADIUS,
+                }
+            }
+        },
+    ) as env:
         balance(env, show_live_plot=args.live_plot)
