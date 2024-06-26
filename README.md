@@ -1,39 +1,22 @@
 # MPC balancer
 
-The MPC balancer allows Upkie to stand upright, balancing with its wheels only, by closed-loop model predictive control. It performs better than the demo [PID balancer](https://github.com/upkie/upkie/tree/902532ecdfdcf0430db7b36cba08a8164c0aa95e/agents/pid_balancer) with significantly less hacks ;-)
+The MPC balancer allows Upkie to stand upright, balancing with its wheels only, by closed-loop model predictive control. It performs better than the demo [PID balancer](https://github.com/upkie/upkie/tree/902532ecdfdcf0430db7b36cba08a8164c0aa95e/agents/pid_balancer), with significantly less hacks ;-)
 
 ## Installation
 
-### From Conda
+We recommend using Anaconda to install the agent and all its dependencies in a clean environment:
 
 ```console
 conda create -f environment.yaml
 conda activate mpc_balancer
 ```
 
-### From PyPI
+Alternatively, you should be able to install the packages listed in the environment file from PyPI.
+
+## Usage
+
+Start the [pi3hat spine](https://upkie.github.io/upkie/spines.html#pi3hat-spine) to run the agent on your robot, or the [Bullet spine](https://upkie.github.io/upkie/spines.html#bullet-spine) to check the agent first in simulation (recommended). Then, run the agent by:
 
 ```console
-pip install upkie[mpc_balancer]
-```
-
-This instruction works on both your dev machine and the robot's Raspberry Pi.
-
-## Simulation
-
-To test the agent in simulation, run the [Bullet spine](https://upkie.github.io/upkie/spines.html#bullet-spine), then start the agent:
-
-```console
-make run_locally
-```
-
-## Real robot
-
-To run this agent on a real Upkie, you can use the Makefile at the root of the repository:
-
-```console
-$ make build
-$ make upload
-$ ssh your-upkie
-user@your-upkie:~$ make run_with_python
+python main.py
 ```
