@@ -18,5 +18,5 @@ Alternatively, you should be able to install the packages listed in the environm
 Start the [pi3hat spine](https://upkie.github.io/upkie/spines.html#pi3hat-spine) to run the agent on your robot, or the [Bullet spine](https://upkie.github.io/upkie/spines.html#bullet-spine) to check the agent first in simulation (recommended). Then, run the agent by:
 
 ```console
-python main.py
+python mpc_balancer.py
 ```
