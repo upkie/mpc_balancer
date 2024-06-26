@@ -15,10 +15,10 @@ from typing import Optional
 import gin
 import gymnasium as gym
 import numpy as np
-import proxsuite
 import qpsolvers
 import upkie.envs
 from numpy.typing import NDArray
+from proxsuite import proxqp
 from qpmpc import MPCQP, Plan, solve_mpc
 from qpmpc.systems import WheeledInvertedPendulum
 from qpsolvers import solve_problem
@@ -57,11 +57,11 @@ class ProxQPWorkspace:
         n_eq = 0
         n_in = mpc_qp.h.size // 2  # WheeledInvertedPendulum structure
         n = mpc_qp.P.shape[1]
-        solver = proxsuite.proxqp.dense.QP(
+        solver = proxqp.dense.QP(
             n,
             n_eq,
             n_in,
-            dense_backend=proxsuite.proxqp.dense.DenseBackend.PrimalDualLDLT,
+            dense_backend=proxqp.dense.DenseBackend.PrimalDualLDLT,
         )
         solver.settings.eps_abs = 1e-3
         solver.settings.eps_rel = 0.0
@@ -85,8 +85,9 @@ class ProxQPWorkspace:
             update_preconditioner=self.update_preconditioner,
         )
         self.solver.solve()
+        result = self.solver.results
         qpsol = qpsolvers.Solution(mpc_qp.problem)
-        qpsol.found = True
+        qpsol.found = result.info.status == proxqp.QPSolverOutput.PROXQP_SOLVED
         qpsol.x = self.solver.results.x
         return qpsol
 
@@ -141,7 +142,7 @@ def balance(
     )
     mpc_problem.initial_state = np.zeros(4)
     mpc_qp = MPCQP(mpc_problem)
-    proxqp = ProxQPWorkspace(mpc_qp)
+    workspace = ProxQPWorkspace(mpc_qp)
 
     live_plot = None
     if show_live_plot and not on_raspi():
@@ -197,9 +198,11 @@ def balance(
         else:
             mpc_qp.update_cost_vector(mpc_problem)
             if warm_start:
-                qpsol = proxqp.solve(mpc_qp)
+                qpsol = workspace.solve(mpc_qp)
             else:
                 qpsol = solve_problem(mpc_qp.problem, solver="proxqp")
+            if not qpsol.found:
+                logging.warn("No solution found to the MPC problem")
             plan = Plan(mpc_problem, qpsol)
         if nb_env_steps > 0:
             base_pitches[step] = base_pitch
