@@ -6,18 +6,14 @@
 
 """Wheel balancing using model predictive control with the ProxQP solver."""
 
-import argparse
 import os
 import time
-from time import perf_counter
-from typing import Optional
 
 import gin
 import gymnasium as gym
 import numpy as np
 import qpsolvers
 import upkie.envs
-from numpy.typing import NDArray
 from proxsuite import proxqp
 from qpmpc import MPCQP, Plan, solve_mpc
 from qpmpc.systems import WheeledInvertedPendulum
@@ -30,23 +26,6 @@ from upkie.utils.spdlog import logging
 upkie.envs.register()
 
 WHEEL_RADIUS = 0.06
-
-
-def parse_command_line_arguments() -> argparse.Namespace:
-    """
-    Parse command line arguments.
-
-    Returns:
-        Command-line arguments.
-    """
-    parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument(
-        "--live-plot",
-        help="Display a live plot of MPC trajectories",
-        action="store_true",
-        default=False,
-    )
-    return parser.parse_args()
 
 
 @gin.configurable
@@ -156,8 +135,6 @@ def balance(
     commanded_velocity = 0.0
     action = np.zeros(env.action_space.shape)
 
-    planning_times = np.empty((nb_env_steps,)) if nb_env_steps > 0 else None
-    base_pitches = np.empty((nb_env_steps,)) if nb_env_steps > 0 else None
     step = 0
     while True:
         action[0] = commanded_velocity
@@ -192,7 +169,6 @@ def balance(
         mpc_problem.update_goal_state(target_states[-nx:])
         mpc_problem.update_target_states(target_states[:-nx])
 
-        t0 = perf_counter()
         if rebuild_qp_every_time:
             plan = solve_mpc(mpc_problem, solver="proxqp")
         else:
@@ -204,9 +180,6 @@ def balance(
             if not qpsol.found:
                 logging.warn("No solution found to the MPC problem")
             plan = Plan(mpc_problem, qpsol)
-        if nb_env_steps > 0:
-            base_pitches[step] = base_pitch
-            planning_times[step] = perf_counter() - t0
 
         if not floor_contact:
             commanded_velocity = low_pass_filter(
@@ -236,33 +209,6 @@ def balance(
             if step >= nb_env_steps:
                 break
 
-    report(mpc_problem, mpc_qp, planning_times)
-    np.save("base_pitches.npy", base_pitches)
-    np.save("planning_times.npy", planning_times)
-
-
-def report(mpc_problem, mpc_qp, planning_times: Optional[NDArray[float]]):
-    average_ms = 1e3 * np.average(planning_times)
-    std_ms = 1e3 * np.std(planning_times)
-    nb_env_steps = planning_times.size
-    print("")
-    print(f"{gin.operative_config_str()}")
-    print(f"{mpc_problem.goal_state=}")
-    print(f"{mpc_problem.nb_timesteps=}")
-    print(f"{mpc_qp.P.shape=}")
-    print(f"{mpc_qp.q.shape=}")
-    print(f"{mpc_qp.G.shape=}")
-    print(f"{mpc_qp.h.shape=}")
-    print(f"{mpc_qp.Phi.shape=}")
-    print(f"{mpc_qp.Psi.shape=}")
-    print("")
-    if planning_times is not None:
-        print(
-            "Planning time: "
-            f"{average_ms:.2} ± {std_ms:.2} ms over {nb_env_steps} calls"
-        )
-        print("")
-
 
 if __name__ == "__main__":
     if on_raspi():
@@ -270,7 +216,6 @@ if __name__ == "__main__":
 
     agent_dir = os.path.dirname(__file__)
     gin.parse_config_file(f"{agent_dir}/config.gin")
-    args = parse_command_line_arguments()
     with gym.make(
         "UpkieGroundVelocity-v3",
         frequency=200.0,
@@ -284,4 +229,4 @@ if __name__ == "__main__":
             }
         },
     ) as env:
-        balance(env, show_live_plot=args.live_plot)
+        balance(env, show_live_plot=False)
