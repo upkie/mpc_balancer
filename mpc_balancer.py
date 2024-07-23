@@ -7,7 +7,6 @@
 """Wheel balancing using model predictive control with the ProxQP solver."""
 
 import os
-import time
 
 import gin
 import gymnasium as gym
@@ -93,7 +92,6 @@ def balance(
     env: gym.Env,
     nb_env_steps: int,
     rebuild_qp_every_time: bool,
-    show_live_plot: bool,
     stage_input_cost_weight: float,
     stage_state_cost_weight: float,
     terminal_cost_weight: float,
@@ -107,7 +105,6 @@ def balance(
             indefinitely).
         rebuild_qp_every_time: If set, rebuild all QP matrices at every
             iteration. Otherwise, only update vectors.
-        show_live_plot: Show a live plot.
         stage_input_cost_weight: Weight for the stage input cost.
         stage_state_cost_weight: Weight for the stage state cost.
         terminal_cost_weight: Weight for the terminal cost.
@@ -122,14 +119,6 @@ def balance(
     mpc_problem.initial_state = np.zeros(4)
     mpc_qp = MPCQP(mpc_problem)
     workspace = ProxQPWorkspace(mpc_qp)
-
-    live_plot = None
-    if show_live_plot and not on_raspi():
-        from qpmpc.live_plots import (  # imports matplotlib
-            WheeledInvertedPendulumPlot,
-        )
-
-        live_plot = WheeledInvertedPendulumPlot(pendulum, order="velocities")
 
     env.reset()  # connects to the spine
     commanded_velocity = 0.0
@@ -193,9 +182,6 @@ def balance(
             logging.info("Continuing with previous action")
         else:  # plan was found
             pendulum.state = initial_state
-            if live_plot is not None:
-                t = time.time()
-                live_plot.update(plan, t, initial_state, t)
             commanded_accel = plan.first_input
             commanded_velocity = clamp_and_warn(
                 commanded_velocity + commanded_accel * env.dt / 2.0,
@@ -214,8 +200,8 @@ if __name__ == "__main__":
     if on_raspi():
         configure_agent_process()
 
-    agent_dir = os.path.dirname(__file__)
-    gin.parse_config_file(f"{agent_dir}/config.gin")
+    script_dir = os.path.dirname(__file__)
+    gin.parse_config_file(f"{script_dir}/config.gin")
     with gym.make(
         "UpkieGroundVelocity-v3",
         frequency=200.0,
@@ -229,4 +215,4 @@ if __name__ == "__main__":
             }
         },
     ) as env:
-        balance(env, show_live_plot=False)
+        balance(env)
