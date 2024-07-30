@@ -30,7 +30,7 @@ set_date:
 	ssh $(REMOTE) sudo date -s "$(CURDATE)"
 
 .PHONY: upload
-upload: check_upkie_name set_date  ## upload built targets to the Raspberry Pi
+upload: check_upkie_name set_date  ## update a remote copy of the repository on the Raspberry Pi
 	ssh $(REMOTE) mkdir -p $(PROJECT_NAME)
 	rsync -Lrtu --delete-after --delete-excluded \
 		--exclude __pycache__ \
