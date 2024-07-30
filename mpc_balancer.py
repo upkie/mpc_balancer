@@ -182,7 +182,7 @@ def balance(
             logging.info("Continuing with previous action")
         else:  # plan was found
             pendulum.state = initial_state
-            commanded_accel = plan.first_input
+            commanded_accel = plan.first_input[0]
             commanded_velocity = clamp_and_warn(
                 commanded_velocity + commanded_accel * env.dt / 2.0,
                 lower=-1.0,
