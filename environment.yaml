@@ -3,11 +3,10 @@ channels:
     - https://conda.anaconda.org/conda-forge
 dependencies:
     - gin-config >= 0.5.0
-    - matplotlib >= 3.7.0
     - numpy >= 1.24.3
     - pip
     - proxsuite >= 0.4.1
-    - qpsolvers >= 3.4.0
     - upkie >= 3.4.0
     - pip:
         - qpmpc >= 3.0.0
+        - qpsolvers >= 3.4.0
