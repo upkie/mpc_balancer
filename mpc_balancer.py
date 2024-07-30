@@ -7,6 +7,7 @@
 """Wheel balancing using model predictive control with the ProxQP solver."""
 
 import os
+from dataclasses import dataclass
 
 import gin
 import gymnasium as gym
@@ -24,7 +25,28 @@ from upkie.utils.spdlog import logging
 
 upkie.envs.register()
 
-WHEEL_RADIUS = 0.06
+
+@gin.configurable
+@dataclass
+class UpkieGeometry:
+    leg_length: float
+    wheel_radius: float
+
+
+@gin.configurable
+class PendularUpkie(WheeledInvertedPendulum):
+    def __init__(
+        self,
+        max_ground_accel: float,
+        nb_timesteps: int,
+        sampling_period: float,
+    ):
+        super().__init__(
+            length=UpkieGeometry().leg_length,
+            max_ground_accel=max_ground_accel,
+            nb_timesteps=nb_timesteps,
+            sampling_period=sampling_period,
+        )
 
 
 @gin.configurable
@@ -71,26 +93,8 @@ class ProxQPWorkspace:
 
 
 @gin.configurable
-class PendularUpkie(WheeledInvertedPendulum):
-    def __init__(
-        self,
-        length: float,
-        max_ground_accel: float,
-        nb_timesteps: int,
-        sampling_period: float,
-    ):
-        super().__init__(
-            length=length,
-            max_ground_accel=max_ground_accel,
-            nb_timesteps=nb_timesteps,
-            sampling_period=sampling_period,
-        )
-
-
-@gin.configurable
 def balance(
     env: gym.Env,
-    nb_env_steps: int,
     rebuild_qp_every_time: bool,
     stage_input_cost_weight: float,
     stage_state_cost_weight: float,
@@ -101,8 +105,6 @@ def balance(
 
     Args:
         env: Gym environment to Upkie.
-        nb_env_steps: Number of environment steps to perform (zero to run
-            indefinitely).
         rebuild_qp_every_time: If set, rebuild all QP matrices at every
             iteration. Otherwise, only update vectors.
         stage_input_cost_weight: Weight for the stage input cost.
@@ -124,7 +126,6 @@ def balance(
     commanded_velocity = 0.0
     action = np.zeros(env.action_space.shape)
 
-    step = 0
     while True:
         action[0] = commanded_velocity
         observation, _, terminated, truncated, info = env.step(action)
@@ -190,11 +191,6 @@ def balance(
                 label="commanded_velocity",
             )
 
-        if nb_env_steps > 0:
-            step += 1
-            if step >= nb_env_steps:
-                break
-
 
 if __name__ == "__main__":
     if on_raspi():
@@ -202,15 +198,16 @@ if __name__ == "__main__":
 
     script_dir = os.path.dirname(__file__)
     gin.parse_config_file(f"{script_dir}/config.gin")
+    wheel_radius = UpkieGeometry().wheel_radius
     with gym.make(
         "UpkieGroundVelocity-v3",
         frequency=200.0,
-        wheel_radius=WHEEL_RADIUS,
+        wheel_radius=wheel_radius,
         spine_config={
             "wheel_odometry": {
                 "signed_radius": {
-                    "left_wheel": +WHEEL_RADIUS,
-                    "right_wheel": -WHEEL_RADIUS,
+                    "left_wheel": +wheel_radius,
+                    "right_wheel": -wheel_radius,
                 }
             }
         },

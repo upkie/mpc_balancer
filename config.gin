@@ -2,15 +2,16 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-ProxQPWorkspace.update_preconditioner = True
-ProxQPWorkspace.verbose = False
+UpkieGeometry.leg_length = 0.58
+UpkieGeometry.wheel_radius = 0.06
 
-PendularUpkie.length = 0.58
 PendularUpkie.max_ground_accel = 10.0
 PendularUpkie.nb_timesteps = 50
 PendularUpkie.sampling_period = 0.02
 
-balance.nb_env_steps = 0  # 0 = unlimited
+ProxQPWorkspace.update_preconditioner = True
+ProxQPWorkspace.verbose = False
+
 balance.rebuild_qp_every_time = False
 balance.stage_input_cost_weight = 1e-3
 balance.stage_state_cost_weight = 1e-3
