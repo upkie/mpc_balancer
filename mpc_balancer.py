@@ -209,8 +209,8 @@ if __name__ == "__main__":
         spine_config={
             "wheel_odometry": {
                 "signed_radius": {
-                    "left_wheel": -WHEEL_RADIUS,
-                    "right_wheel": +WHEEL_RADIUS,
+                    "left_wheel": +WHEEL_RADIUS,
+                    "right_wheel": -WHEEL_RADIUS,
                 }
             }
         },
