@@ -12,6 +12,7 @@ from dataclasses import dataclass
 import gin
 import gymnasium as gym
 import numpy as np
+
 import qpsolvers
 import upkie.envs
 from proxsuite import proxqp
@@ -176,7 +177,7 @@ def balance(
                 prev_output=commanded_velocity,
                 cutoff_period=0.1,
                 new_input=0.0,
-                dt=env.dt,
+                dt=env.unwrapped.dt,
             )
         elif plan.is_empty:
             logging.error("Solver found no solution to the MPC problem")
@@ -185,7 +186,7 @@ def balance(
             pendulum.state = initial_state
             commanded_accel = plan.first_input[0]
             commanded_velocity = clamp_and_warn(
-                commanded_velocity + commanded_accel * env.dt / 2.0,
+                commanded_velocity + commanded_accel * env.unwrapped.dt / 2.0,
                 lower=-1.0,
                 upper=+1.0,
                 label="commanded_velocity",
