@@ -6,13 +6,14 @@
 
 """Wheel balancing using model predictive control with the ProxQP solver."""
 
-import os
+import socket
 from dataclasses import dataclass
+from pathlib import Path
+from typing import List, Optional
 
 import gin
 import gymnasium as gym
 import numpy as np
-
 import qpsolvers
 import upkie.envs
 from proxsuite import proxqp
@@ -32,6 +33,25 @@ upkie.envs.register()
 class UpkieGeometry:
     leg_length: float
     wheel_radius: float
+    rotation_base_to_imu: Optional[List[float]] = None
+
+    def get_spine_config(self) -> dict:
+        spine_config = {
+            "wheel_odometry": {
+                "signed_radius": {
+                    "left_wheel": +self.wheel_radius,
+                    "right_wheel": -self.wheel_radius,
+                }
+            }
+        }
+        if self.rotation_base_to_imu is not None:
+            spine_config["base_orientation"] = {
+                "rotation_base_to_imu": np.array(
+                    self.rotation_base_to_imu,
+                    dtype=float,
+                ),
+            }
+        return spine_config
 
 
 @gin.configurable
