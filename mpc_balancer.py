@@ -217,20 +217,17 @@ if __name__ == "__main__":
     if on_raspi():
         configure_agent_process()
 
-    script_dir = os.path.dirname(__file__)
-    gin.parse_config_file(f"{script_dir}/config.gin")
-    wheel_radius = UpkieGeometry().wheel_radius
+    hostname = socket.gethostname()
+    config_dir = Path(__file__).parent / "config"
+    gin.parse_config_file(f"{config_dir}/base.gin")
+    host_config = Path(config_dir / f"{hostname}.gin")
+    if host_config.exists():
+        gin.parse_config_file(host_config)
+    upkie_geometry = UpkieGeometry()
     with gym.make(
         "UpkieGroundVelocity-v3",
         frequency=200.0,
-        wheel_radius=wheel_radius,
-        spine_config={
-            "wheel_odometry": {
-                "signed_radius": {
-                    "left_wheel": +wheel_radius,
-                    "right_wheel": -wheel_radius,
-                }
-            }
-        },
+        wheel_radius=upkie_geometry.wheel_radius,
+        spine_config=upkie_geometry.get_spine_config(),
     ) as env:
         balance(env)

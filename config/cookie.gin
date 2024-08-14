@@ -1,0 +1,9 @@
+# -*- python -*-
+#
+# SPDX-License-Identifier: Apache-2.0
+
+# Cookie's IMU has a non-standard placement
+UpkieGeometry.rotation_base_to_imu = [-1, 0, 0, 0, 0, 1, 0, 1, 0]
+
+# Hack: Cookie's wheels turn the other way round
+UpkieGeometry.wheel_radius = -0.0725  # [m]
