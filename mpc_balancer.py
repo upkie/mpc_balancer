@@ -150,7 +150,7 @@ def balance(
     while True:
         action[0] = commanded_velocity
         observation, _, terminated, truncated, info = env.step(action)
-        env.log("observation", observation)
+        env.unwrapped.log("observation", observation)
         if terminated or truncated:
             observation, info = env.reset()
             commanded_velocity = 0.0
