@@ -229,5 +229,6 @@ if __name__ == "__main__":
         frequency=200.0,
         wheel_radius=upkie_geometry.wheel_radius,
         spine_config=upkie_geometry.get_spine_config(),
+        disable_env_checker=True,  # faster startup
     ) as env:
         balance(env)
