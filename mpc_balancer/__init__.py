@@ -6,8 +6,10 @@
 
 """MPC balancer."""
 
+from .proxqp_workspace import ProxQPWorkspace
 from .workspace import Workspace
 
 __all__ = [
+    "ProxQPWorkspace",
     "Workspace",
 ]

@@ -55,24 +55,11 @@ class UpkieGeometry:
 
 
 @gin.configurable
-class PendularUpkie(WheeledInvertedPendulum):
-    def __init__(
-        self,
-        max_ground_accel: float,
-        nb_timesteps: int,
-        sampling_period: float,
-    ):
-        super().__init__(
-            length=UpkieGeometry().leg_length,
-            max_ground_accel=max_ground_accel,
-            nb_timesteps=nb_timesteps,
-            sampling_period=sampling_period,
-        )
-
-
-@gin.configurable
 def balance(
     env: gym.Env,
+    max_ground_accel: float,
+    mpc_sampling_period: float,
+    nb_mpc_timesteps: int,
     rebuild_qp_every_time: bool,
     stage_input_cost_weight: float,
     stage_state_cost_weight: float,
@@ -90,7 +77,12 @@ def balance(
         terminal_cost_weight: Weight for the terminal cost.
         warm_start: If set, use the warm-starting feature of ProxQP.
     """
-    pendulum = PendularUpkie()
+    pendulum = WheeledInvertedPendulum(
+        length=UpkieGeometry().leg_length,
+        max_ground_accel=max_ground_accel,
+        nb_timesteps=nb_mpc_timesteps,
+        sampling_period=mpc_sampling_period,
+    )
     mpc_problem = pendulum.build_mpc_problem(
         terminal_cost_weight=terminal_cost_weight,
         stage_state_cost_weight=stage_state_cost_weight,
@@ -183,9 +175,9 @@ if __name__ == "__main__":
     upkie_geometry = UpkieGeometry()
     with gym.make(
         "UpkieGroundVelocity-v3",
-        frequency=200.0,
-        wheel_radius=upkie_geometry.wheel_radius,
-        spine_config=upkie_geometry.get_spine_config(),
         disable_env_checker=True,  # faster startup
+        frequency=200.0,
+        spine_config=upkie_geometry.get_spine_config(),
+        wheel_radius=upkie_geometry.wheel_radius,
     ) as env:
         balance(env)
