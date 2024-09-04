@@ -1,6 +1,6 @@
 # MPC balancer
 
-The MPC balancer allows Upkie to stand upright, balancing with its wheels only, by closed-loop model predictive control. It performs better than the previous PID balancer, with significantly less hacks.
+Make an Upkie to stand upright by closed-loop model predictive control.
 
 ## Installation
 
@@ -15,8 +15,29 @@ Alternatively, you should be able to install the packages listed in the environm
 
 ## Usage
 
-Start the [pi3hat spine](https://upkie.github.io/upkie/spines.html#pi3hat-spine) to run the agent on your robot, or the [Bullet spine](https://upkie.github.io/upkie/spines.html#bullet-spine) to check the agent first in simulation (recommended). Then, run the agent by:
+To run in simulation, clone the [upkie](https://github.com/upkie/upkie) repository and run:
 
 ```console
-python mpc_balancer.py
+./start_simulation.sh
 ```
+
+Activate your conda environment and run the agent by:
+
+```console
+python run_agent.py
+```
+
+## Solvers
+
+This agent only works with QP solvers that support warm starting. At present we only support one solver:
+
+| Solver | Algorithm | License | Warm-start |
+| ------ | --------- | ------- |------------|
+| [ProxQP](https://github.com/Simple-Robotics/proxsuite) | Augmented Lagrangian | BSD-2-Clause | ✔️ |
+
+You can take a peek at the [ProxQP balancer](https://github.com/stephane-caron/proxqp_balancer) (research code) for more solvers.
+
+## See also
+
+- [PPO balancer](https://github.com/upkie/ppo_balancer): an MLP agent trained for the same task by reinforcement learning.
+- [ProxQP balancer](https://github.com/stephane-caron/proxqp_balancer): prototype for this agent used in the code for the [ProxQP paper](https://inria.hal.science/hal-04198663v2). Currently supports more QP solvers.
