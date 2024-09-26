@@ -7,7 +7,7 @@ Make an Upkie to stand upright by closed-loop model predictive control.
 We recommend using Anaconda to install the agent and all its dependencies in a clean environment:
 
 ```console
-conda create -f environment.yaml
+conda env create -f environment.yaml
 conda activate mpc_balancer
 ```
 
