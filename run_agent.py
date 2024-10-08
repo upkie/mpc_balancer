@@ -173,6 +173,8 @@ if __name__ == "__main__":
     if host_config.exists():
         gin.parse_config_file(host_config)
     upkie_geometry = UpkieGeometry()
+    logging.info(f"Leg length: {upkie_geometry.leg_length} m")
+    logging.info(f"Wheel radius: {upkie_geometry.wheel_radius} m")
     with gym.make(
         "UpkieGroundVelocity-v3",
         disable_env_checker=True,  # faster startup
