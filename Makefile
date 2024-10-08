@@ -43,8 +43,8 @@ upload: check_upkie_name set_date  ## update a remote copy of the repository on 
 # ============================================================
 
 HOST_CONDA_PATH=~/.micromamba
-REMOTE_CONDA_PATH=~/.micromamba
-CONDA_ENV_NAME=raspios_$(PROJECT_NAME)
+PACKED_ENV_NAME=raspios_$(PROJECT_NAME)
+RASPI_CONDA_PATH=~/.micromamba
 
 .PHONY: check_conda_env
 check_conda_env:
@@ -52,25 +52,20 @@ check_conda_env:
 		echo "micromamba not found: conda rules only work for micromamba for now"; \
 		exit 1; \
 	}
-	@command -v conda-pack >/dev/null 2>&1 || { \
-		echo "conda-pack not installed: install it by 'conda install conda-forge::conda-pack'"; \
-		exit 1; \
-	}
 
 clean:  ## clean up temporary files
-	rm -f $(CONDA_ENV_NAME).tar.gz
+	rm -f $(PACKED_ENV_NAME).tar.gz
 
-$(CONDA_ENV_NAME).tar.gz:
-	# conda env create -f environment.yaml -n $(CONDA_ENV_NAME) --platform linux-aarch64 -y
-	# conda-pack -p $(HOST_CONDA_PATH)/envs/$(CONDA_ENV_NAME) -o $(CONDA_ENV_NAME).tar.gz
-	tar -zcf "$(CONDA_ENV_NAME).tar.gz" -C $(HOST_CONDA_PATH)/envs/$(CONDA_ENV_NAME) "."
-	# conda env remove -n $(CONDA_ENV_NAME) -y
+$(PACKED_ENV_NAME).tar.gz:
+	conda env create -f environment.yaml -n $(PACKED_ENV_NAME) --platform linux-aarch64 -y
+	tar -zcf "$(PACKED_ENV_NAME).tar.gz" -C $(HOST_CONDA_PATH)/envs/$(PACKED_ENV_NAME) "."
+	conda env remove -n $(PACKED_ENV_NAME) -y
 
 .PHONY: pack_conda_env
-pack_conda_env: check_conda_env $(CONDA_ENV_NAME).tar.gz  ## prepare conda environment to install it offline on your Upkie
+pack_conda_env: check_conda_env $(PACKED_ENV_NAME).tar.gz  ## prepare conda environment to install it offline on your Upkie
 
 .PHONY: unpack_conda_env
 unpack_conda_env:  ### unpack conda environment to remote conda path
-	micromamba env list | grep $(PROJECT_NAME) && micromamba env remove -n $(PROJECT_NAME) -y
-	mkdir -p $(REMOTE_CONDA_PATH)/envs/$(PROJECT_NAME)
-	tar -xzf raspios_$(PROJECT_NAME).tar.gz -C $(REMOTE_CONDA_PATH)/envs/$(PROJECT_NAME)
+	-micromamba env list | grep $(PROJECT_NAME) && micromamba env remove -n $(PROJECT_NAME) -y
+	mkdir -p $(RASPI_CONDA_PATH)/envs/$(PROJECT_NAME)
+	tar -zxf $(PACKED_ENV_NAME).tar.gz -C $(RASPI_CONDA_PATH)/envs/$(PROJECT_NAME)
