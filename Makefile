@@ -26,13 +26,49 @@ check_upkie_name:
 
 # This rule is handy if the target Upkie is not connected to the Internet
 .PHONY: set_date
-set_date:
-	ssh $(REMOTE) sudo date -s "$(CURDATE)"
+set_date:  check_upkie_name
+	ssh ${UPKIE_NAME} sudo date -s "$(CURDATE)"
 
 .PHONY: upload
 upload: check_upkie_name set_date  ## update a remote copy of the repository on the Raspberry Pi
-	ssh $(REMOTE) mkdir -p $(PROJECT_NAME)
+	ssh ${UPKIE_NAME} mkdir -p $(PROJECT_NAME)
 	rsync -Lrtu --delete-after --delete-excluded \
 		--exclude __pycache__ \
 		--exclude cache/ \
-		--progress $(CURDIR)/ $(REMOTE):$(PROJECT_NAME)/
+		--progress $(CURDIR)/ ${UPKIE_NAME}:$(PROJECT_NAME)/
+
+# Packing and unpacking conda environment for an offline Upkie
+# ============================================================
+
+HOST_CONDA_PATH=~/.micromamba
+REMOTE_CONDA_PATH=~/.micromamba
+CONDA_ENV_NAME=raspios_$(PROJECT_NAME)
+
+.PHONY: check_conda_env
+check_conda_env:
+	@command -v micromamba >/dev/null 2>&1 || { \
+		echo "micromamba not found: conda rules only work for micromamba for now"; \
+		exit 1; \
+	}
+	@command -v conda-pack >/dev/null 2>&1 || { \
+		echo "conda-pack not installed: install it by 'conda install conda-forge::conda-pack'"; \
+		exit 1; \
+	}
+
+clean:  ## clean up temporary files
+	rm -f $(CONDA_ENV_NAME).tar.gz
+
+$(CONDA_ENV_NAME).tar.gz:
+	# conda env create -f environment.yaml -n $(CONDA_ENV_NAME) --platform linux-aarch64 -y
+	# conda-pack -p $(HOST_CONDA_PATH)/envs/$(CONDA_ENV_NAME) -o $(CONDA_ENV_NAME).tar.gz
+	tar -zcf "$(CONDA_ENV_NAME).tar.gz" -C $(HOST_CONDA_PATH)/envs/$(CONDA_ENV_NAME) "."
+	# conda env remove -n $(CONDA_ENV_NAME) -y
+
+.PHONY: pack_conda_env
+pack_conda_env: check_conda_env $(CONDA_ENV_NAME).tar.gz  ## prepare conda environment to install it offline on your Upkie
+
+.PHONY: unpack_conda_env
+unpack_conda_env:  ### unpack conda environment to remote conda path
+	micromamba env list | grep $(PROJECT_NAME) && micromamba env remove -n $(PROJECT_NAME) -y
+	mkdir -p $(REMOTE_CONDA_PATH)/envs/$(PROJECT_NAME)
+	tar -xzf raspios_$(PROJECT_NAME).tar.gz -C $(REMOTE_CONDA_PATH)/envs/$(PROJECT_NAME)
