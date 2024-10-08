@@ -45,13 +45,6 @@ upload: check_upkie_name set_date  ## update a remote copy of the repository on 
 HOST_CONDA_PATH=~/.micromamba
 RASPI_CONDA_PATH=~/.micromamba
 
-.PHONY: check_conda_env
-check_conda_env:
-	@command -v micromamba >/dev/null 2>&1 || { \
-		echo "micromamba not found: conda rules only work for micromamba for now"; \
-		exit 1; \
-	}
-
 clean:  ## clean up temporary files
 	rm -f conda_env.tar.gz
 
@@ -61,7 +54,7 @@ conda_env.tar.gz:
 	conda env remove -n raspios_$(PROJECT_NAME) -y
 
 .PHONY: pack_conda_env
-pack_conda_env: check_conda_env conda_env.tar.gz  ## prepare conda environment to install it offline on your Upkie
+pack_conda_env: conda_env.tar.gz  ## prepare conda environment to install it offline on your Upkie
 
 .PHONY: unpack_conda_env
 unpack_conda_env:  ### unpack conda environment to remote conda path
