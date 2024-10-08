@@ -66,6 +66,6 @@ pack_conda_env: check_conda_env $(PACKED_ENV_NAME).tar.gz  ## prepare conda envi
 
 .PHONY: unpack_conda_env
 unpack_conda_env:  ### unpack conda environment to remote conda path
-	-micromamba env list | grep $(PROJECT_NAME) && micromamba env remove -n $(PROJECT_NAME) -y
+	-micromamba env list | grep $(PROJECT_NAME) > /dev/null && micromamba env remove -n $(PROJECT_NAME) -y
 	mkdir -p $(RASPI_CONDA_PATH)/envs/$(PROJECT_NAME)
 	tar -zxf $(PACKED_ENV_NAME).tar.gz -C $(RASPI_CONDA_PATH)/envs/$(PROJECT_NAME)
