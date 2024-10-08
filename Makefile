@@ -43,7 +43,6 @@ upload: check_upkie_name set_date  ## update a remote copy of the repository on 
 # ============================================================
 
 HOST_CONDA_PATH=~/.micromamba
-PACKED_ENV_NAME=raspios_$(PROJECT_NAME)
 RASPI_CONDA_PATH=~/.micromamba
 
 .PHONY: check_conda_env
@@ -54,18 +53,18 @@ check_conda_env:
 	}
 
 clean:  ## clean up temporary files
-	rm -f $(PACKED_ENV_NAME).tar.gz
+	rm -f conda_env.tar.gz
 
-$(PACKED_ENV_NAME).tar.gz:
-	conda env create -f environment.yaml -n $(PACKED_ENV_NAME) --platform linux-aarch64 -y
-	tar -zcf "$(PACKED_ENV_NAME).tar.gz" -C $(HOST_CONDA_PATH)/envs/$(PACKED_ENV_NAME) "."
-	conda env remove -n $(PACKED_ENV_NAME) -y
+conda_env.tar.gz:
+	conda env create -f environment.yaml -n raspios_$(PROJECT_NAME) --platform linux-aarch64 -y
+	tar -zcf conda_env.tar.gz -C $(HOST_CONDA_PATH)/envs/raspios_$(PROJECT_NAME) .
+	conda env remove -n raspios_$(PROJECT_NAME) -y
 
 .PHONY: pack_conda_env
-pack_conda_env: check_conda_env $(PACKED_ENV_NAME).tar.gz  ## prepare conda environment to install it offline on your Upkie
+pack_conda_env: check_conda_env conda_env.tar.gz  ## prepare conda environment to install it offline on your Upkie
 
 .PHONY: unpack_conda_env
 unpack_conda_env:  ### unpack conda environment to remote conda path
 	-micromamba env list | grep $(PROJECT_NAME) > /dev/null && micromamba env remove -n $(PROJECT_NAME) -y
 	mkdir -p $(RASPI_CONDA_PATH)/envs/$(PROJECT_NAME)
-	tar -zxf $(PACKED_ENV_NAME).tar.gz -C $(RASPI_CONDA_PATH)/envs/$(PROJECT_NAME)
+	tar -zxf conda_env.tar.gz -C $(RASPI_CONDA_PATH)/envs/$(PROJECT_NAME)
