@@ -138,7 +138,7 @@ def balance(
             else:
                 qpsol = solve_problem(mpc_qp.problem, solver="proxqp")
             if not qpsol.found:
-                logging.warn("No solution found to the MPC problem")
+                logging.warning("No solution found to the MPC problem")
             plan = Plan(mpc_problem, qpsol)
 
         if not floor_contact:
