@@ -58,6 +58,7 @@ class UpkieGeometry:
 def balance(
     env: gym.Env,
     max_ground_accel: float,
+    max_ground_velocity: float,
     mpc_sampling_period: float,
     nb_mpc_timesteps: int,
     rebuild_qp_every_time: bool,
@@ -66,10 +67,14 @@ def balance(
     terminal_cost_weight: float,
     warm_start: bool,
 ):
-    """Run MPC balancer in gym environment with logging.
+    """Run MPC balancer with logging.
 
     Args:
-        env: Gym environment to Upkie.
+        env: Gymnasium environment to Upkie.
+        max_ground_accel: Maximum ground acceleration, in [m] / [s]².
+        max_ground_velocity: Maximum ground velocity, in [m] / [s].
+        mpc_sampling_period: Duration of an MPC timestep, in [s].
+        nb_mpc_timesteps: Number of timesteps in the receding horizon.
         rebuild_qp_every_time: If set, rebuild all QP matrices at every
             iteration. Otherwise, only update vectors.
         stage_input_cost_weight: Weight for the stage input cost.
@@ -156,8 +161,8 @@ def balance(
             commanded_accel = plan.first_input[0]
             commanded_velocity = clamp_and_warn(
                 commanded_velocity + commanded_accel * env.unwrapped.dt / 2.0,
-                lower=-1.0,
-                upper=+1.0,
+                lower=-max_ground_velocity,
+                upper=+max_ground_velocity,
                 label="commanded_velocity",
             )
 
