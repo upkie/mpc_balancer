@@ -2,9 +2,9 @@ name: mpc_balancer
 channels:
     - https://conda.anaconda.org/conda-forge
 dependencies:
-    - gin-config >= 0.5.0
-    - numpy >= 1.24.3
-    - proxsuite >= 0.4.1
-    - qpmpc >= 3.0.1
-    - qpsolvers >= 4.3.3
-    - upkie >= 5.1.0
+    - gin-config >=0.5.0
+    - numpy >=1.24.3
+    - proxsuite >=0.4.1
+    - qpmpc >=3.0.1
+    - qpsolvers >=4.3.3
+    - upkie ==5.1.0

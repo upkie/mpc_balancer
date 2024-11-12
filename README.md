@@ -1,5 +1,7 @@
 # MPC balancer
 
+[![upkie](https://img.shields.io/badge/upkie-5.1.0-cyan)](https://github.com/upkie/upkie/tree/v5.1.0)
+
 Make an Upkie to stand upright by closed-loop model predictive control.
 
 ## Installation
