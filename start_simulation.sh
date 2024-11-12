@@ -1,6 +1,6 @@
 #!/bin/bash
 
-VERSION=5.1.0
+VERSION=6.0.0
 
 UPKIE_DOWNLOAD_URL="https://github.com/upkie/upkie/releases/download"
 SYSTEM=$(uname -s)
