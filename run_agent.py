@@ -30,9 +30,11 @@ upkie.envs.register()
 
 @gin.configurable
 @dataclass
-class UpkieGeometry:
+class UpkieConfig:
     leg_length: float
+    max_ground_velocity: float
     wheel_radius: float
+
     rotation_base_to_imu: Optional[List[float]] = None
 
     def get_spine_config(self) -> dict:
@@ -58,7 +60,6 @@ class UpkieGeometry:
 def balance(
     env: gym.Env,
     max_ground_accel: float,
-    max_ground_velocity: float,
     mpc_sampling_period: float,
     nb_mpc_timesteps: int,
     rebuild_qp_every_time: bool,
@@ -72,7 +73,6 @@ def balance(
     Args:
         env: Gymnasium environment to Upkie.
         max_ground_accel: Maximum ground acceleration, in [m] / [s]².
-        max_ground_velocity: Maximum ground velocity, in [m] / [s].
         mpc_sampling_period: Duration of an MPC timestep, in [s].
         nb_mpc_timesteps: Number of timesteps in the receding horizon.
         rebuild_qp_every_time: If set, rebuild all QP matrices at every
@@ -82,8 +82,9 @@ def balance(
         terminal_cost_weight: Weight for the terminal cost.
         warm_start: If set, use the warm-starting feature of ProxQP.
     """
+    upkie_config = UpkieConfig()
     pendulum = WheeledInvertedPendulum(
-        length=UpkieGeometry().leg_length,
+        length=upkie_config.leg_length,
         max_ground_accel=max_ground_accel,
         nb_timesteps=nb_mpc_timesteps,
         sampling_period=mpc_sampling_period,
@@ -161,30 +162,38 @@ def balance(
             commanded_accel = plan.first_input[0]
             commanded_velocity = clamp_and_warn(
                 commanded_velocity + commanded_accel * env.unwrapped.dt / 2.0,
-                lower=-max_ground_velocity,
-                upper=+max_ground_velocity,
+                lower=-upkie_config.max_ground_velocity,
+                upper=upkie_config.max_ground_velocity,
                 label="commanded_velocity",
             )
 
 
-if __name__ == "__main__":
-    if on_raspi():
-        configure_agent_process()
-
+def parse_gin_config():
     hostname = socket.gethostname()
     config_dir = Path(__file__).parent / "config"
     gin.parse_config_file(f"{config_dir}/base.gin")
     host_config = Path(config_dir / f"{hostname}.gin")
     if host_config.exists():
         gin.parse_config_file(host_config)
-    upkie_geometry = UpkieGeometry()
-    logging.info(f"Leg length: {upkie_geometry.leg_length} m")
-    logging.info(f"Wheel radius: {upkie_geometry.wheel_radius} m")
+
+
+def main():
+    upkie_config = UpkieConfig()
+    logging.info(f"Leg length: {upkie_config.leg_length} m")
+    logging.info(f"Wheel radius: {upkie_config.wheel_radius} m")
     with gym.make(
         "UpkieGroundVelocity-v3",
         disable_env_checker=True,  # faster startup
         frequency=200.0,
-        spine_config=upkie_geometry.get_spine_config(),
-        wheel_radius=upkie_geometry.wheel_radius,
+        max_ground_velocity=upkie_config.max_ground_velocity,
+        spine_config=upkie_config.get_spine_config(),
+        wheel_radius=upkie_config.wheel_radius,
     ) as env:
         balance(env)
+
+
+if __name__ == "__main__":
+    if on_raspi():
+        configure_agent_process()
+    parse_gin_config()
+    main()
