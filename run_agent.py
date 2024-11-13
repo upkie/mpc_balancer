@@ -15,7 +15,7 @@ import gin
 import gymnasium as gym
 import numpy as np
 import upkie.envs
-from qpmpc import MPCQP, Plan, solve_mpc
+from qpmpc import MPCQP, Plan
 from qpmpc.systems import WheeledInvertedPendulum
 from qpsolvers import solve_problem
 from upkie.utils.clamp import clamp_and_warn
@@ -62,7 +62,6 @@ def balance(
     max_ground_accel: float,
     mpc_sampling_period: float,
     nb_mpc_timesteps: int,
-    rebuild_qp_every_time: bool,
     stage_input_cost_weight: float,
     stage_state_cost_weight: float,
     terminal_cost_weight: float,
@@ -75,8 +74,6 @@ def balance(
         max_ground_accel: Maximum ground acceleration, in [m] / [s]².
         mpc_sampling_period: Duration of an MPC timestep, in [s].
         nb_mpc_timesteps: Number of timesteps in the receding horizon.
-        rebuild_qp_every_time: If set, rebuild all QP matrices at every
-            iteration. Otherwise, only update vectors.
         stage_input_cost_weight: Weight for the stage input cost.
         stage_state_cost_weight: Weight for the stage state cost.
         terminal_cost_weight: Weight for the terminal cost.
@@ -135,17 +132,14 @@ def balance(
         mpc_problem.update_goal_state(target_states[-nx:])
         mpc_problem.update_target_states(target_states[:-nx])
 
-        if rebuild_qp_every_time:
-            plan = solve_mpc(mpc_problem, solver="proxqp")
+        mpc_qp.update_cost_vector(mpc_problem)
+        if warm_start:
+            qpsol = workspace.solve(mpc_qp)
         else:
-            mpc_qp.update_cost_vector(mpc_problem)
-            if warm_start:
-                qpsol = workspace.solve(mpc_qp)
-            else:
-                qpsol = solve_problem(mpc_qp.problem, solver="proxqp")
-            if not qpsol.found:
-                logging.warning("No solution found to the MPC problem")
-            plan = Plan(mpc_problem, qpsol)
+            qpsol = solve_problem(mpc_qp.problem, solver="proxqp")
+        if not qpsol.found:
+            logging.warning("No solution found to the MPC problem")
+        plan = Plan(mpc_problem, qpsol)
 
         if not floor_contact:
             commanded_velocity = low_pass_filter(

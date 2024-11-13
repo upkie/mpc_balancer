@@ -9,7 +9,6 @@ UpkieConfig.wheel_radius = 0.06               # [m]
 balance.max_ground_accel = 10.0               # [m] / [s]²
 balance.mpc_sampling_period = 0.02            # [s]
 balance.nb_mpc_timesteps = 50
-balance.rebuild_qp_every_time = False
 balance.stage_input_cost_weight = 1e-3
 balance.stage_state_cost_weight = 1e-3
 balance.terminal_cost_weight = 1.0
