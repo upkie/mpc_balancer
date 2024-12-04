@@ -78,7 +78,7 @@ if [[ -n "$SPINE_ARCHIVE" ]] && [[ ! -v BUILD ]]; then
         # Return code 1 is from closing the simulation GUI
         if [ $SPINE_RC -eq 1 ]; then
             if echo "$OUTPUT" | grep -q "version.*GLIBC"; then
-                echo "Unfortunately, it seems your GLIBC version is not compatible with the downloaded binary"
+                echo "⚠️  It seems your GLIBC version is not compatible with the downloaded binary"
                 BUILD=1
             fi
         elif [ $SPINE_RC -ne 0 ] && [ $SPINE_RC -ne 1 ]; then
