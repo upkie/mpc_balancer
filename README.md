@@ -39,6 +39,29 @@ This agent only works with QP solvers that support warm starting. At present we 
 
 You can take a peek at the [ProxQP balancer](https://github.com/stephane-caron/proxqp_balancer) (research code) for more solvers.
 
+## Export dependencies to your Upkie
+
+This agent can export a pixi environment to your Upkie using `pixi-pack`. If you don't have pixi yet, you can [install it](https://pixi.sh/latest/#installation).
+
+First, create an `environment.tar` file with the following command:
+
+```bash
+pixi run pack-to-upkie
+```
+
+Then, upload it to your Upkie and unpack it by:
+
+```bash
+pixi-pack unpack environment.tar
+```
+
+If `pixi-pack` is not installed on your Upkie, you can get a `pixi-pack-aarch64-unknown-linux-gnu` binary from the [pixi-pack release page](https://github.com/Quantco/pixi-pack/releases). Finally, activate the environment and run the agent:
+
+```bash
+source ./activate.sh
+python mpc_balancer/run.py
+```
+
 ## See also
 
 - [PPO balancer](https://github.com/upkie/ppo_balancer): an MLP agent trained for the same task by reinforcement learning.
