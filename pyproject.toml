@@ -1,0 +1,35 @@
+[project]
+name = "mpc_balancer"
+version = "1.0.0"
+description = "The MPC balancer is a closed-loop model predictive controller based on a linearized wheeled-inverted-pendulum model"
+requires-python = ">= 3.9"
+dependencies = []
+
+[build-system]
+build-backend = "flit_core.buildapi"
+requires = ["flit_core >=2,<4"]
+
+[tool.pixi.project]
+channels = ["conda-forge"]
+platforms = ["linux-64", "linux-aarch64", "osx-arm64"]
+
+[tool.pixi.pypi-dependencies]
+mpc_balancer = { path = ".", editable = true }
+
+[tool.pixi.dependencies]
+gin-config = ">=0.5.0"
+numpy = ">=1.24.3"
+proxsuite = ">=0.4.1"
+qpmpc = ">=3.0.1"
+qpsolvers = ">=4.3.3"
+upkie = ">=6,<7"
+
+[tool.pixi.feature.pack.dependencies]
+pixi-pack = "*"
+
+[tool.pixi.feature.pack.tasks]
+pack-to-upkie = "pixi-pack pack -e default --platform linux-aarch64 --ignore-pypi-errors"
+
+[tool.pixi.environments]
+default = { features = [], solve-group = "default" }
+pack = { features = ["pack"], solve-group = "default" }
