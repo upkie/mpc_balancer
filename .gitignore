@@ -3,3 +3,10 @@ bazel-*
 cache/
 conda_env.tar.gz
 tools/bazel
+
+# pixi and pixi-pack
+*.egg-info
+.pixi
+activate.sh
+env/
+environment.tar
