@@ -1915,7 +1915,7 @@ packages:
 - pypi: .
   name: mpc-balancer
   version: 1.0.0
-  sha256: 63e1c216e0026c5bf543b72de3fdeb7f039d9d40b6ad5aa4ccd4e8ddde750784
+  sha256: 1ce4f70b2072395d4770a4bc2e54b25b16117b96c7875d11df4da06d4b13f7db
   requires_python: '>=3.9'
   editable: true
 - conda: https://conda.anaconda.org/conda-forge/linux-64/mpfr-4.2.1-h90cbb55_3.conda
