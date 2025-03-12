@@ -42,4 +42,22 @@ upload: check_upkie_name set_date  ## update a remote copy of the repository on 
 	rsync -Lrtu --delete-after --delete-excluded \
 		--exclude __pycache__ \
 		--exclude cache/ \
+		--exclude .pixi/ \
 		--progress $(CURDIR)/ ${UPKIE_NAME}:$(PROJECT_NAME)/
+
+# ENVIRONMENT PACKING
+# ===================
+
+check_mamba_setup:
+	@ if [ -z "${MAMBA_ROOT_PREFIX}" ]; then \
+        echo "ERROR: Either MAMBA_EXE or MAMBA_ROOT_PREFIX is not set."; \
+        echo "Is Micromamba installed?"; \
+        echo "See https://mamba.readthedocs.io/en/latest/installation/micromamba-installation.html"; \
+        exit 1; \
+	fi
+
+pack_env:  ## pack pixi environment to environment.tar
+	pixi run pack-to-aarch64
+
+unpack_env: check_mamba_setup  ### unpack pixi environment from environment.tar
+	pixi-pack unpack environment.tar -e upkie -o ${MAMBA_ROOT_PREFIX}/envs
