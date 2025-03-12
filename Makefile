@@ -60,4 +60,4 @@ pack_env:  ## pack pixi environment to environment.tar
 	pixi run pack-to-aarch64
 
 unpack_env: check_mamba_setup  ### unpack pixi environment from environment.tar
-	pixi-pack unpack environment.tar -e upkie -o ${MAMBA_ROOT_PREFIX}/envs
+	pixi-pack unpack environment.tar -e $(PROJECT_NAME) -o ${MAMBA_ROOT_PREFIX}/envs
