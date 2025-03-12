@@ -41,24 +41,23 @@ You can take a peek at the [ProxQP balancer](https://github.com/stephane-caron/p
 
 ## Export dependencies to your Upkie
 
-This agent can export a pixi environment to your Upkie using `pixi-pack`. If you don't have pixi yet, you can [install it](https://pixi.sh/latest/#installation).
-
-First, create an `environment.tar` file with the following command:
+This agent can export a pixi environment to your Upkie using `pixi-pack`. If you don't have pixi yet, you will need to [install it](https://pixi.sh/latest/#installation) first. Then, to pack an environment from your computer, run:
 
 ```bash
-pixi run pack-to-upkie
+make pack_env
 ```
 
-Then, upload it to your Upkie and unpack it by:
+This will create an `environment.tar` archive in the current directory. You can upload it to your Upkie by `make upload` and unpack it from the agent's remote directory by:
 
 ```bash
-pixi-pack unpack environment.tar
+your_user@your_upkie:~/mpc_balancer$ make unpack_env
+
 ```
 
-If `pixi-pack` is not installed on your Upkie, you can get a `pixi-pack-aarch64-unknown-linux-gnu` binary from the [pixi-pack release page](https://github.com/Quantco/pixi-pack/releases). Finally, activate the environment and run the agent:
+If `pixi-pack` is not installed on your Upkie, you can download the `pixi-pack-aarch64-unknown-linux-gnu` binary from the [pixi-pack release page](https://github.com/Quantco/pixi-pack/releases). Finally, activate the environment and run the agent:
 
 ```bash
-source ./activate.sh
+conda activate mpc_balancer
 python mpc_balancer/run.py
 ```
 
