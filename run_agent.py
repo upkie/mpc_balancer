@@ -176,7 +176,7 @@ def main():
     logging.info(f"Leg length: {upkie_config.leg_length} m")
     logging.info(f"Wheel radius: {upkie_config.wheel_radius} m")
     with gym.make(
-        "UpkieGroundVelocity-v3",
+        "UpkieGroundVelocity-v4",
         disable_env_checker=True,  # faster startup
         frequency=200.0,
         max_ground_velocity=upkie_config.max_ground_velocity,
