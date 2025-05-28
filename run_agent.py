@@ -6,7 +6,6 @@
 
 """Wheel balancing using model predictive control with the ProxQP solver."""
 
-import socket
 from dataclasses import dataclass
 from pathlib import Path
 from typing import List, Optional
@@ -163,10 +162,10 @@ def balance(
 
 
 def parse_gin_config():
-    hostname = socket.gethostname()
     config_dir = Path(__file__).parent / "config"
     gin.parse_config_file(f"{config_dir}/base.gin")
-    host_config = Path(config_dir / f"{hostname}.gin")
+
+    host_config = Path.home() / ".config" / "upkie" / "mpc_balancer.gin"
     if host_config.exists():
         gin.parse_config_file(host_config)
 
