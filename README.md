@@ -54,7 +54,7 @@ your_user@your_upkie:~/mpc_balancer$ make unpack_env
 
 ```
 
-If `pixi-pack` is not installed on your Upkie, you can download the `pixi-pack-aarch64-unknown-linux-gnu` binary from the [pixi-pack release page](https://github.com/Quantco/pixi-pack/releases). Finally, activate the environment and run the agent:
+If `pixi-pack` is not installed on your Upkie, you can download the `pixi-pack-aarch64-unknown-linux-musl` binary from the [pixi-pack release page](https://github.com/Quantco/pixi-pack/releases). Finally, activate the environment and run the agent:
 
 ```bash
 conda activate mpc_balancer

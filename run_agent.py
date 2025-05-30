@@ -173,7 +173,11 @@ def parse_gin_config():
 def main():
     upkie_config = UpkieConfig()
     logging.info(f"Leg length: {upkie_config.leg_length} m")
+    logging.info(
+        f"Max. ground velocity: {upkie_config.max_ground_velocity} m/s"
+    )
     logging.info(f"Wheel radius: {upkie_config.wheel_radius} m")
+    logging.info(f"Additional spine config:\n\n{upkie_config.get_spine_config()}\n\n")
     with gym.make(
         "UpkieGroundVelocity-v4",
         disable_env_checker=True,  # faster startup
