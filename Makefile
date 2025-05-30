@@ -2,9 +2,6 @@
 
 PROJECT_NAME = mpc_balancer
 
-CURDATE = $(shell date -Iseconds)
-CONDA_ENV_FILE = conda_env.tar.gz
-
 # Help snippet adapted from:
 # http://marmelab.com/blog/2016/02/29/auto-documented-makefile.html
 .PHONY: help
@@ -28,16 +25,8 @@ check_upkie_name:
 		exit 1; \
 	fi
 
-clean:  ## clean up temporary files
-	rm -f $(CONDA_ENV_FILE)
-
-# This rule is handy if the target Upkie is not connected to the Internet
-.PHONY: set_date
-set_date:  check_upkie_name
-	ssh ${UPKIE_NAME} sudo date -s "$(CURDATE)"
-
 .PHONY: upload
-upload: check_upkie_name set_date  ## update a remote copy of the repository on the Raspberry Pi
+upload: check_upkie_name  ## update a remote copy of the repository on the Raspberry Pi
 	ssh ${UPKIE_NAME} mkdir -p $(PROJECT_NAME)
 	rsync -Lrtu --delete-after --delete-excluded \
 		--exclude __pycache__ \
