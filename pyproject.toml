@@ -28,7 +28,7 @@ upkie = ">=6,<7"
 pixi-pack = "*"
 
 [tool.pixi.feature.pack.tasks]
-pack-to-aarch64 = "pixi-pack pack -e default --platform linux-aarch64 --ignore-pypi-errors"
+pack-to-aarch64 = "pixi-pack pack -e default --platform linux-aarch64 --ignore-pypi-non-wheel"
 
 [tool.pixi.environments]
 default = { features = [], solve-group = "default" }
