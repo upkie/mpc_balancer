@@ -101,7 +101,6 @@ def balance(
     while True:
         action[0] = commanded_velocity
         observation, _, terminated, truncated, info = env.step(action)
-        env.unwrapped.log("observation", observation)
         if terminated or truncated:
             observation, info = env.reset()
             commanded_velocity = 0.0
@@ -170,16 +169,23 @@ def parse_gin_config():
         gin.parse_config_file(host_config)
 
 
-def main():
+if __name__ == "__main__":
+    if on_raspi():
+        configure_agent_process()
+    parse_gin_config()
+
     upkie_config = UpkieConfig()
     logging.info(f"Leg length: {upkie_config.leg_length} m")
     logging.info(
         f"Max. ground velocity: {upkie_config.max_ground_velocity} m/s"
     )
     logging.info(f"Wheel radius: {upkie_config.wheel_radius} m")
-    logging.info(f"Additional spine config:\n\n{upkie_config.get_spine_config()}\n\n")
+    logging.info(
+        f"Additional spine config:\n\n{upkie_config.get_spine_config()}\n\n"
+    )
+
     with gym.make(
-        "UpkieGroundVelocity-v4",
+        "UpkieGroundVelocity",
         disable_env_checker=True,  # faster startup
         frequency=200.0,
         max_ground_velocity=upkie_config.max_ground_velocity,
@@ -187,10 +193,3 @@ def main():
         wheel_radius=upkie_config.wheel_radius,
     ) as env:
         balance(env)
-
-
-if __name__ == "__main__":
-    if on_raspi():
-        configure_agent_process()
-    parse_gin_config()
-    main()
