@@ -30,6 +30,9 @@ pixi-pack = "*"
 [tool.pixi.feature.pack.tasks]
 pack-to-aarch64 = "pixi-pack pack -e default --platform linux-aarch64 --ignore-pypi-non-wheel"
 
+[tool.pixi.tasks.agent]
+cmd = "python run_agent.py"
+
 [tool.pixi.environments]
 default = { features = [], solve-group = "default" }
 pack = { features = ["pack"], solve-group = "default" }
