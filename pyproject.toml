@@ -28,7 +28,7 @@ upkie = ">=6,<7"
 pixi-pack = "*"
 
 [tool.pixi.feature.pack.tasks]
-pack-to-aarch64 = "pixi-pack pack -e default --platform linux-aarch64 --ignore-pypi-non-wheel"
+pack-to-upkie = "pixi-pack pack -e default --platform linux-aarch64 --ignore-pypi-non-wheel"
 
 [tool.pixi.tasks.agent]
 cmd = "python run_agent.py"
